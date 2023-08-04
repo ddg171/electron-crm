@@ -1,39 +1,24 @@
 
 import {contextBridge } from "electron"
-import {db} from "./model/getdb"
-import {userController,UserController} from "./controller/user"
+import {userController,UserController} from "./controller/userController"
+import {myAPIController} from "./controller/myAPIController"
+
+export interface myAPI {
+  find: () => Promise<Task[]>,
+  insert:(t:Task) => Promise<any>,
+  delete:(id:string)=>Promise<any>
+}
 
 
-contextBridge.exposeInMainWorld("user",userController)
-
-contextBridge.exposeInMainWorld('myAPI', {
-  find: () => {
-    return new Promise((resolve,reject)=>{
-       db.find({}).sort({deadline:1}).exec((err,doc)=>{
-        if(err){
-          return reject(err)
-        }
-        resolve(doc)
-       })
-    })
-  },
-  insert: (payload:any) => {
-    const data ={
-      ...payload,
-      createdAt:new Date(),
-      updatedAt:new Date()
-    }
-    data.deadline= new Date(data.deadline)
-    return new Promise((resolve)=>{
-       resolve(db.insert(data))
-    })
-  },
-  delete:(id:string)=>{
-    return new Promise((resolve)=>{
-      resolve(db.remove({_id:id}))
-    })
+declare global {
+  interface Window {
+    myAPI: myAPI
+    userAPI:UserController
   }
-})
+}
+contextBridge.exposeInMainWorld("userAPI",userController)
+
+contextBridge.exposeInMainWorld('myAPI',myAPIController)
 
 interface Task {
   _id?:string
@@ -42,20 +27,6 @@ interface Task {
   deadline:Date|string
   createdAt?:Date|string
   updatedAt?:Date|string
-}
-
-
-export interface myAPI {
-  find: () => Promise<Task[]>,
-  insert:(t:Task) => Promise<any>,
-  delete:(id:string)=>Promise<any>
-}
-
-declare global {
-  interface Window {
-    myAPI: myAPI
-    user:UserController
-  }
 }
 
 

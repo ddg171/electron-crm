@@ -12,8 +12,3 @@ const fileName = path.join(remote.app.getPath("userData"), "data.db")
 const db = new Datastore({filename:fileName, autoload:true})
 
 export { db };
-
-
-class Table extends Datastore{
-    constructor()
-}

@@ -14,6 +14,7 @@ remote.initialize()
 // │
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 
 let win: BrowserWindow | null

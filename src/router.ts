@@ -1,21 +1,21 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import IndexView from './pages/index.vue';
-import UserView from "./pages/users.vue"
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import Index from "./view/Index.vue"
+import Customer from './view/Customer.vue';
+import Order from "./view/Order.vue";
+import Supplier from "./view/Supplier.vue"
+
+const routes: RouteRecordRaw[] = [
+  { path: "/", component: Index },
+  { path: "/customer", component: Customer },
+  { path: "/supplier", component: Supplier },
+  { path: "/order", component: Order },
+];
+
+const basePath = "/";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'index',
-      component: IndexView,
-    },
-    {
-      path: '/users',
-      name: 'users',
-      component:UserView
-    },
-  ],
+  history: createWebHistory(basePath),
+  routes, // `routes: routes` の短縮表記
 });
 
 export default router;
