@@ -1,6 +1,7 @@
 
 import {contextBridge } from "electron"
 import {userController,UserController} from "./controller/userController"
+import { itemController,ItemController } from "./controller/itemController"
 import {myAPIController} from "./controller/myAPIController"
 
 export interface myAPI {
@@ -14,9 +15,11 @@ declare global {
   interface Window {
     myAPI: myAPI
     userAPI:UserController
+    itemAPI:ItemController
   }
 }
 contextBridge.exposeInMainWorld("userAPI",userController)
+contextBridge.exposeInMainWorld("itemAPI",itemController)
 
 contextBridge.exposeInMainWorld('myAPI',myAPIController)
 

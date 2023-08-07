@@ -39,6 +39,7 @@
   top: 0;
   background-color: #409EFF;
   color: #FFFFFF;
+  z-index: 1999;
 }
 
 .header-row {

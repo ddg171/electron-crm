@@ -5,6 +5,8 @@
       <router-view></router-view>
     </el-main>
   </el-container>
+  <div id="portal">
+  </div>
 </template>
 
 <script lang="ts" setup>

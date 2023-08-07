@@ -6,34 +6,53 @@
         <NewUserForm @submit="getUsers" />
       </el-row>
       <el-row>
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="name" label="名前" />
-          <el-table-column prop="_id" label="ID" />
-        </el-table>
+        <UserTable :user="users" @detail="showDetail" @delete="deleteUser" />
+        <UserEditModal :user="selectedUser" @click-outside="closeDetail" @update="getUsers" />
       </el-row>
-
     </el-col>
+
   </el-row>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref ,onMounted} from "vue";
 import {User} from "../../electron/model/users";
-import NewUserForm from "../components/form/user/Insert.vue"
+import {useUserState} from "../composables/user"
+import NewUserForm from "../components/form/user/Create.vue"
+import UserEditModal from "../components/modal/UserEdit.vue";
+import UserTable from "../components/tables/UserTable.vue"
 
-const tableData = ref<User[]>([])
+
+const {users,reset,get} =useUserState()
 
 const getUsers =async ()=>{
-  tableData.value=[]
-  console.log("find user")
-  const result = await window.userAPI.find({})
-  console.log(result)
-  console.log("find userend")
-
-  tableData.value =result
+  reset()
+  await get()
 }
 
-getUsers()
+const selecetId=ref<string|null>(null)
+const showDetail = (id:string)=>{
+  selecetId.value=id||null
+}
+const closeDetail=()=>{
+  selecetId.value=null
+}
+
+const selectedUser = computed<User|null>(()=>{
+  if(!selecetId.value) return null
+  return users.value.find((u)=>u._id===selecetId.value) || null
+})
+
+
+const deleteUser = async(id:string)=>{
+  await window.userAPI.delete(id)
+  await getUsers()
+}
+
+onMounted(async () => {
+  await getUsers()
+})
+
 
 </script>
 
