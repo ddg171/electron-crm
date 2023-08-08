@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import{reactive,computed,watch}from "vue"
 import {Order} from "../../../../electron/model/orders"
-import {Item} from "electron";
+import {Item} from "../../../../electron/model/items";
 import {User} from "../../../../electron/model/users";
 
 
@@ -64,7 +64,7 @@ const userIdList =computed<{id:string,name:string}[]>(()=>{
 const submit =async ()=>{
   const {memo,estinatedDeliveryDate,userId} =form
   // 謎
-  const items = props.items.map((i)=>i._id)
+  const items = props.items.map((i:Item)=>i._id)
   console.log(items)
   if(!userId) return
   if(props.items.length<=0) return

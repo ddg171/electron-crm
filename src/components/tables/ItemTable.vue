@@ -21,11 +21,11 @@ interface Props{
 interface Emits{
   (e:"detail",id:string):void,
   (e:"delete",id:string):void
-  (e:"selected",v:Item[]):void
+  (e:"selected-items",v:Item[]):void
 }
 
-const handleSelectionChange = (val: Item[]) => {
-  emits("selected",val)
+const handleSelectionChange = (v: Item[]):void => {
+  emits("selected-items",v)
 }
 
   const props = withDefaults(defineProps<Props>(),{items:()=>[]})

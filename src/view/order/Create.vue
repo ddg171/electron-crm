@@ -17,7 +17,7 @@
       <el-row>
         <el-col>
           <el-button @click="showItemModal">品物を追加</el-button>
-          <ItemTable :items="items" @selected="itemSelected" />
+          <ItemTable :items="items" @selected-items="itemSelected" />
           <ItemCreateModal :show-close="isItemModalShown" :user-id="selectedUserId" @create="initItems(selectedUserId)"
             @click-outside="hideItemModal" />
         </el-col>
@@ -56,6 +56,10 @@ const formSubmit=()=>{
 
 const selectedItems =ref<Item[]>([])
 const itemSelected=(v:Item[])=>{
+  if(!v||v.length===0){
+    selectedItems.value=[]
+    return
+  }
   selectedItems.value=v
 }
 
