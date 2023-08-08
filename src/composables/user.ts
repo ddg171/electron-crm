@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import {User} from "../../electron/model/users";
 
-export const useUserState =()=>{
+export const useUsersState =()=>{
   const users = ref<User[]>([])
   const get = async()=>{
     const result= await window.userAPI.find({})

@@ -1,7 +1,8 @@
 <template>
-  <el-table :data="props.user" style="width: 100%">
+  <el-table :data="props.items" style="width: 100%" @selection-change="handleSelectionChange">
+    <el-table-column type="selection" />
     <el-table-column prop="name" label="名前" />
-    <el-table-column prop="" label="ID" />
+    <el-table-column prop="category" label="分類" />
     <el-table-column fixed="right" label="Operations" width="120">
       <template #default="scope">
         <el-button link type="primary" size="small" @click="emits('detail',scope.row._id)">Detail</el-button>
@@ -12,16 +13,21 @@
 </template>
 
 <script setup lang="ts">
-import {User} from "../../../electron/model/users";
+import {Item} from "../../../electron/model/items";
 interface Props{
-  user:User[]
+  items:Item[]
 }
 
 interface Emits{
   (e:"detail",id:string):void,
   (e:"delete",id:string):void
+  (e:"selected",v:Item[]):void
 }
 
-  const props = withDefaults(defineProps<Props>(),{user:()=>[]})
+const handleSelectionChange = (val: Item[]) => {
+  emits("selected",val)
+}
+
+  const props = withDefaults(defineProps<Props>(),{items:()=>[]})
   const emits  = defineEmits<Emits>()
 </script>

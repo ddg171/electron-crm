@@ -3,8 +3,10 @@
     <el-col :xs="12">
       <!-- ここに中身 -->
       <el-row>
-        <NewUserForm @submit="getUsers" />
+        <el-button @click="createModalShown=true">Create</el-button>
+        <UserCreateModal :showClose="createModalShown" @create="getUsers" @click-outside="createModalShown=false" />
       </el-row>
+
       <el-row>
         <UserTable :user="users" @detail="showDetail" @delete="deleteUser" />
         <UserEditModal :user="selectedUser" @click-outside="closeDetail" @update="getUsers" />
@@ -17,18 +19,22 @@
 <script lang="ts" setup>
 import { computed, ref ,onMounted} from "vue";
 import {User} from "../../electron/model/users";
-import {useUserState} from "../composables/user"
-import NewUserForm from "../components/form/user/Create.vue"
+import {useUsersState} from "../composables/user"
 import UserEditModal from "../components/modal/UserEdit.vue";
+import UserCreateModal from "../components/modal/UserCreate.vue"
 import UserTable from "../components/tables/UserTable.vue"
 
-
-const {users,reset,get} =useUserState()
+const createModalShown = ref<boolean>(false)
+const {users,reset,get} =useUsersState()
 
 const getUsers =async ()=>{
+  createModalShown.value =false
+  closeDetail()
   reset()
   await get()
 }
+
+
 
 const selecetId=ref<string|null>(null)
 const showDetail = (id:string)=>{

@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Index from "./view/Index.vue"
 import Customer from './view/Customer.vue';
-import Order from "./view/Order.vue";
+import Order from "./view/order/Index.vue";
+import OrderCreate from "./view/order/Create.vue";
+import OrderDetail from "./view/order/_id.vue";
 import Supplier from "./view/Supplier.vue"
 
 const routes: RouteRecordRaw[] = [
@@ -9,6 +11,8 @@ const routes: RouteRecordRaw[] = [
   { path: "/customer", component: Customer },
   { path: "/supplier", component: Supplier },
   { path: "/order", component: Order },
+  { path: "/order/create", component: OrderCreate },
+  { path: "/order/:id", component: OrderDetail },
 ];
 
 const basePath = "/";

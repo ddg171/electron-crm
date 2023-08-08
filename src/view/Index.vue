@@ -20,7 +20,8 @@
           <div>
             <h3>ショートカット</h3>
             <el-row>
-              <el-Button :icon="Plus" size="large" role="router-link" to="customer">注文受付</el-Button>
+              <el-Button :icon="Plus" size="large" role="router-link" to="customer"
+                @click="$router.push('/order/create')">注文受付</el-Button>
               <el-Button :icon="Check" size="large">品物受入</el-Button>
               <el-Button :icon="Search" size="large">顧客検索</el-Button>
             </el-row>

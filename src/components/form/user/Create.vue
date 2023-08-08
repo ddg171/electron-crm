@@ -27,7 +27,7 @@ import {User} from "../../../../electron/model/users"
 
 type NewUserFormValues= Omit<User,"_id"|"createdAt"|"updatedAt">
 
-const emits=defineEmits<{(e:"submit"):void}>()
+const emits=defineEmits<{(e:"submit",id?:string):void}>()
 
 const form =reactive<NewUserFormValues>(
   {
@@ -39,7 +39,6 @@ const form =reactive<NewUserFormValues>(
 )
 
 const submit =async ()=>{
-  console.log("submit", window.userAPI.insert)
   const {name,hurigana,sex,birthDay} =form
   const payload ={
     name,
@@ -48,10 +47,10 @@ const submit =async ()=>{
     birthDay,
   }
   const r= await window.userAPI.insert(payload)
-  console.log(r)
+  const id =r._id
 
 
-  emits("submit")
+  emits("submit",id)
 }
 
 </script>
