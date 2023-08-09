@@ -55,7 +55,7 @@ export const itemController = {
       updatedAt: new Date()
     }
     return new Promise((res)=>{
-      res(Items.update({"_id":id},data))
+      res(Items.update({"_id":id},{$set:data}))
     })
   },
   delete(id:string){

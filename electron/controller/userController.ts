@@ -54,7 +54,7 @@ export const userController = {
       updatedAt: new Date()
     }
     return new Promise((res)=>{
-      res(Users.update({"_id":id},data))
+      res(Users.update({"_id":id},{$set:data}))
     })
   },
   delete(id:string){

@@ -3,7 +3,7 @@ import Datastore from 'nedb';
 import { filePath } from './common';
 export interface Order {
   _id:string
-  status:	"waiting"|"inProgress"|"compolate"|"aborted"
+  status:	"waiting"|"inProgress"|"complete"|"aborted"
   memo: string
   taskTotalCount:	number
   finishedTaskCount: number

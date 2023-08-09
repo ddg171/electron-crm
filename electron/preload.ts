@@ -3,6 +3,7 @@ import {contextBridge } from "electron"
 import {userController,UserController} from "./controller/userController"
 import {itemController,ItemController } from "./controller/itemController"
 import {orderController,OrderController } from "./controller/orderController"
+import { taskController, TaskController } from "./controller/taskController"
 import {myAPIController} from "./controller/myAPIController"
 
 export interface myAPI {
@@ -18,11 +19,13 @@ declare global {
     userAPI:UserController
     itemAPI:ItemController
     orderAPI:OrderController
+    taskAPI:TaskController
   }
 }
 contextBridge.exposeInMainWorld("userAPI",userController)
 contextBridge.exposeInMainWorld("orderAPI",orderController)
 contextBridge.exposeInMainWorld("itemAPI",itemController)
+contextBridge.exposeInMainWorld("taskAPI",taskController)
 
 contextBridge.exposeInMainWorld('myAPI',myAPIController)
 

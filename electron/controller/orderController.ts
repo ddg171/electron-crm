@@ -7,6 +7,8 @@ export interface OrderController {
   findOne:(id:string)=>Promise<Order>,
   insert:(t:InsertPayload) => Promise<Order>,
   update:(id:string,t:Partial<UpdatePayload>) => Promise<any>,
+  keepIn:(id:string)=>Promise<any>
+  complete:(id:string)=>Promise<any>
   abort:(id:string)=>Promise<any>
   delete:(id:string)=>Promise<any>
 }
@@ -62,6 +64,12 @@ export const orderController = {
   },
   update(id:string,payload:UpdatePayload){
     return _update(id,payload)
+  },
+  keepIn(id:string){
+    return _update(id,{status:"inProgress"})
+  },
+  complete(id:string){
+    return _update(id,{status:"complete"})
   },
   abort(id:string){
     return _update(id,{status:"aborted"})
