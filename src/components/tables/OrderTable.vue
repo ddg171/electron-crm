@@ -47,6 +47,7 @@ interface Emits{
   (e:"delete",id?:string):void
 }
 const formatDate =(d:Date)=>{
+  if(!d) return "/"
   return format(d,"yyyy/MM/dd")
 }
 

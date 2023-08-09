@@ -19,7 +19,7 @@
       </el-row>
     </el-form-item>
     <el-form-item v-show="!props.submitButtonShown">
-      <el-button type="primary" @click="submit">Create</el-button>
+      <el-button type="primary" @click="submit">update</el-button>
     </el-form-item>
   </el-form>
 </template>

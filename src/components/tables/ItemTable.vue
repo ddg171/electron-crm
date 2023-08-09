@@ -1,6 +1,6 @@
 <template>
   <el-table :data="props.items" style="width: 100%" @selection-change="handleSelectionChange">
-    <el-table-column type="selection" />
+    <el-table-column />
     <el-table-column prop="name" label="名前" />
     <el-table-column prop="category" label="分類" />
     <el-table-column fixed="right" label="Operations" width="120">

@@ -6,9 +6,23 @@ export interface OrderController {
   find: (option:{[T:string]:any}) =>Promise<Order[]>,
   findOne:(id:string)=>Promise<Order>,
   insert:(t:InsertPayload) => Promise<Order>,
-  update:(id:string,t:UpdatePayload) => Promise<any>,
+  update:(id:string,t:Partial<UpdatePayload>) => Promise<any>,
+  abort:(id:string)=>Promise<any>
   delete:(id:string)=>Promise<any>
 }
+
+const _update = (id:string,payload:Partial<UpdatePayload>)=>{
+  if(!payload){
+      throw new Error()
+    }
+    const data ={
+      ...payload,
+      updatedAt: new Date()
+    }
+    return new Promise((res)=>{
+      res(Orders.update({"_id":id},{$set:data}))
+    })
+  }
 
 export const orderController = {
   find(option:{[T:string]:any}){
@@ -47,16 +61,10 @@ export const orderController = {
     })
   },
   update(id:string,payload:UpdatePayload){
-    if(!payload){
-      throw new Error()
-    }
-    const data ={
-      ...payload,
-      updatedAt: new Date()
-    }
-    return new Promise((res)=>{
-      res(Orders.update({"_id":id},data))
-    })
+    return _update(id,payload)
+  },
+  abort(id:string){
+    return _update(id,{status:"aborted"})
   },
   delete(id:string){
     return new Promise((res)=>{

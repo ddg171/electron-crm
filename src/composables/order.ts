@@ -5,6 +5,7 @@ export const useOrdersState =()=>{
   const orders = ref<Order[]>([])
   const get = async()=>{
     const result= await window.orderAPI.find({})
+    console.log(result)
     orders.value = result
   }
   const reset =()=>{

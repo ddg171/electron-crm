@@ -14,7 +14,7 @@
 import AppModal from './AppModal.vue';
 import ItemCreateForm from "../form/item/Create.vue"
 
-const emits=defineEmits<{(e:"click-outside"):void,(e:"create",v?:string):void}>()
+const emits=defineEmits<{(e:"click-outside"):void,(e:"create",v:string):void}>()
 
 const emitCreate =(id:string|undefined)=>{
   emits("create",id)
