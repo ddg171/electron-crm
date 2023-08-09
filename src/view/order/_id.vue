@@ -1,30 +1,46 @@
 <template>
   <el-row align="middle" justify="center" class="page-view">
     <el-col :xs="12">
-      <h2>注文詳細</h2>
-      <el-row>
-        <el-col>
-          <OrderEditForm :initial-value="order" :user="user" :items="items" @show-item-create-modal="show"
-            @update="init" />
-          <ItemCreateModal :show-close="isShown" :userId="user?._id" @click-outside="hide" @create="itemAdded" />
-        </el-col>
-      </el-row>
-      <h2>操作</h2>
-      <el-row>
-        <el-button @click="keepIn">品物を受け取る。</el-button>
-        <el-button @click="abort">注文をキャンセルする。</el-button>
-      </el-row>
-      <h2>工程管理</h2>
-      <el-row>
-        <ul class="task-list">
-          <li v-for="t in tasks" :key="t._id">
+      <el-card>
+        <template #header>
+          <el-row>
+            <h2>注文詳細</h2>
+          </el-row>
+        </template>
+        <OrderEditForm :initial-value="order" :user="user" :items="items" @show-item-create-modal="showItem"
+          @update="init" />
+        <ItemCreateModal :show-close="isShownItem" :userId="user?._id" @click-outside="hideItem" @create="itemAdded" />
+      </el-card>
+      <el-card>
+        <template #header>
+          <el-row>
+            <h2>操作</h2>
+          </el-row>
+        </template>
+        <el-row>
+          <el-button @click="keepIn" size="large">品物を受け取る。</el-button>
+          <el-button @click="abort" size="large">注文をキャンセルする。</el-button>
+          <el-button @click="complete" size="large" :disabled="finishBtnDisabled">注文を完了する。</el-button>
+        </el-row>
+      </el-card>
+      <el-card>
+        <template #header>
+          <el-row>
+            <h2>工程管理</h2>
+            <el-button @click="showTask">工程追加</el-button>
+          </el-row>
+        </template>
+        <el-row>
+          <p></p>
+        </el-row>
+        <el-row gutter="6">
+          <el-col class="task-list" v-for="t in tasks" :key="t._id">
             <TaskCard :task="t" :items="items" @update="initTasks" />
-          </li>
-        </ul>
-      </el-row>
-      <el-row>
-        <TaskCreateForm :userId="user?._id" :orderId="order?._id" :items="orderItems" @submit="initTasks" />
-      </el-row>
+          </el-col>
+        </el-row>
+        <TaskCreateModal :show-close="isShownTask" :userId="user?._id||null" :orderId="order?._id||null" :items="items"
+          @click-outside="hideTask" @create="taskAdded" />
+      </el-card>
     </el-col>
   </el-row>
 </template>
@@ -38,16 +54,22 @@ import {Item} from "../../../electron/model/items";
 // import {Task} from "../../../electron/model/tasks";
 import {useTasksState} from "../../composables/tasks";
 import OrderEditForm from "../../components/form/order/Edit.vue";
-import TaskCreateForm from "../../components/form/task/Create.vue";
+import TaskCreateModal from "../../components/modal/TaskCreate.vue";
 import {useModalState} from "../../composables/modal";
 import ItemCreateModal from "../../components/modal/ItemCreate.vue";
 import TaskCard from "../../components/card/Task.vue";
 const route = useRoute()
-const {isShown,show,hide} = useModalState()
+const {isShown:isShownItem,show:showItem,hide:hideItem} = useModalState()
+const {isShown:isShownTask,show:showTask,hide:hideTask} = useModalState()
 const {tasks,get:getTasks,reset:resetTasks} = useTasksState()
 
 const itemAdded =async ()=>{
-  hide()
+  hideItem()
+  await init()
+}
+
+const taskAdded =async ()=>{
+  hideTask()
   await init()
 }
 
@@ -88,10 +110,21 @@ const abort = async()=>{
   await window.orderAPI.abort(id)
   await init()
 }
-
-const orderItems =computed<Item[]>(()=>{
-  if(!order.value) return []
-  return items.value.filter(i=>order.value?.items.includes(i._id))
+const complete =async()=>{
+  if(!order.value) return
+  const id = order.value._id
+  await window.orderAPI.complete(id)
+  await init()
+}
+const finishBtnDisabled =computed<boolean>(()=>{
+  // 注文が無い
+  if(!order.value) return true
+  // 注文が進行中でない。
+  if(order.value.status !== "inProgress") return true  
+  if(tasks.value.length === 0) return false
+  // 未完了の工程がある
+  const unfinishedTasks = tasks.value.filter(t=>!t.isFinished)
+  return unfinishedTasks.length > 0
 })
 
 const initTasks=async ()=>{

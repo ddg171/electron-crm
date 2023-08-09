@@ -1,13 +1,17 @@
 <template>
   <el-row align="middle" justify="center" class="page-view">
     <el-col :xs="12">
-      <el-row>
-        <el-col>
-          <OrderCreateForm :users="users" ref="form" :submitButtonShown="false" @user-select="userSelect"
-            @click-add-customer="showCustomerModal" @submit="$router.push(`/order/${$event}`)" />
-        </el-col>
+      <el-card>
+        <template #header>
+          <el-row>
+            <h2>新規受付</h2>
+          </el-row>
+        </template>
+        <OrderCreateForm :users="users" ref="form" :submitButtonShown="false" @user-select="userSelect"
+          @click-add-customer="showCustomerModal" @submit="$router.push(`/order/${$event}`)" />
         <UserCreateModal :show-close="isCustomerModalShown" @create="initUsers" @click-outside="hideCustomerModal" />
-      </el-row>
+
+      </el-card>
     </el-col>
   </el-row>
 </template>

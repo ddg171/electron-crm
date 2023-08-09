@@ -2,8 +2,8 @@
   <el-row align="middle" justify="center" class="page-view">
     <el-col :xs="12">
       <el-row>
-        <el-col>
-          <RouterLink to="/order/create">新規受付</RouterLink>
+        <el-col span="4">
+          <el-button @click="$router.push('/order/create')">新規受付</el-button>
         </el-col>
       </el-row>
       <el-row>
@@ -11,9 +11,6 @@
           <OrderTable :orders="orders" :users="users" @delete="getOrders" />
         </el-col>
       </el-row>
-
-      <!-- ここに中身 -->
-      注文
     </el-col>
   </el-row>
 </template>

@@ -49,7 +49,7 @@ import AppHeader from "./components/AppHeader.vue"
   gap: 2rem;
 }
 
-.el-row {
-  margin-bottom: 2rem;
+.el-card {
+  margin-bottom: 1rem;
 }
 </style>

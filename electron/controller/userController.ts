@@ -13,7 +13,7 @@ export interface UserController {
 export const userController = {
   find(option:{[T:string]:any}){
     return new Promise((res,rej)=>{
-      Users.find(option).exec(
+      Users.find(option).sort({name:1}).exec(
         (err,doc)=>{
           if(err) return rej(err)
           return res(doc)

@@ -14,7 +14,7 @@ export interface ItemController {
 export const itemController = {
   find(option:{[T:string]:any}){
     return new Promise((res,rej)=>{
-      Items.find(option).exec(
+      Items.find(option).sort({createdDate:-1}).exec(
         (err,doc)=>{
           if(err) return rej(err)
           return res(doc)

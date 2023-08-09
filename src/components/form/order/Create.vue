@@ -5,7 +5,7 @@
         <el-option label="選択" value="" />
         <el-option v-for="u in userIdList" :key="u.id" :label="u.name" :value="u.id" />
       </el-select>
-      <el-button @click="$emit('click-add-customer')">顧客追加</el-button>
+      <el-button @click="$emit('click-add-customer')" size="large">顧客追加</el-button>
     </el-form-item>
     <el-form-item label="納品予定日">
       <el-row>
@@ -19,7 +19,7 @@
       </el-row>
     </el-form-item>
     <el-form-item v-show="!props.submitButtonShown">
-      <el-button type="primary" @click="submit">Create</el-button>
+      <el-button type="primary" @click="submit" size="large">注文作成</el-button>
     </el-form-item>
   </el-form>
 </template>

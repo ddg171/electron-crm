@@ -11,13 +11,15 @@
       <el-col :span="6">
         完了予定日:{{format(props.task.estinatedDeliveryDate,"yyyy/MM/dd")}}
       </el-col>
-      <el-col :span="4">
-        <el-button @click="finish">全て完了にする</el-button>
-      </el-col>
+
     </el-row>
-    <el-row>
+    <el-row gutter="16">
+      <el-col :span="4">
+        <el-button @click="finish" size="large">全て完了にする</el-button>
+      </el-col>
       <el-col span="6">
-        <el-button v-for="i in itemList" :key="i" @click="finishItemTask(props.task._id,i,!props.task.itemTasks[i])">{{
+        <el-button v-for="i in itemList" :key="i" @click="finishItemTask(props.task._id,i,!props.task.itemTasks[i])"
+          size="large">{{
           itemsObj[i] }}/{{ !!props.task.itemTasks[i]?"済":"未" }}</el-button>
       </el-col>
     </el-row>

@@ -14,7 +14,7 @@
       <el-switch v-model="form.isConsumable" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit">Create</el-button>
+      <el-button type="primary" @click="submit" size="large">作成</el-button>
     </el-form-item>
   </el-form>
 </template>

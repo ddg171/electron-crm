@@ -18,14 +18,14 @@
         </el-tooltip>
       </el-checkbox-group>
       <div>
-        <el-button>品物管理</el-button> <el-button @click="emits(`show-item-create-modal`)">品物追加</el-button>
+        <el-button size="large">品物管理</el-button> <el-button @click="emits(`show-item-create-modal`)">品物追加</el-button>
       </div>
     </el-form-item>
     <el-form-item label="摘要欄">
       <el-input type="textarea" v-model="form.memo" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit">update</el-button>
+      <el-button type="primary" @click="submit" size="large">更新</el-button>
     </el-form-item>
   </el-form>
 </template>

@@ -36,7 +36,7 @@ const _update = (id:string,payload:Partial<UpdatePayload>)=>{
 export const taskController = {
   find(option:{[T:string]:any}){
     return new Promise((res,rej)=>{
-      Tasks.find(option).exec(
+      Tasks.find(option).sort({estinatedDeliveryDate:1}).exec(
         (err,doc)=>{
           if(err) return rej(err)
           return res(doc)

@@ -29,7 +29,7 @@ const _update = (id:string,payload:Partial<UpdatePayload>)=>{
 export const orderController = {
   find(option:{[T:string]:any}){
     return new Promise((res,rej)=>{
-      Orders.find(option).exec(
+      Orders.find(option).sort({estinatedDeliveryDate:1}).exec(
         (err,doc)=>{
           if(err) return rej(err)
           return res(doc)
