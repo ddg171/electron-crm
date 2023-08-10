@@ -11,6 +11,7 @@ export interface OrderController {
   complete:(id:string)=>Promise<any>
   abort:(id:string)=>Promise<any>
   delete:(id:string)=>Promise<any>
+  _clear:()=>Promise<any>
 }
 
 const _update = (id:string,payload:Partial<UpdatePayload>)=>{
@@ -77,6 +78,11 @@ export const orderController = {
   delete(id:string){
     return new Promise((res)=>{
       res(Orders.remove({"_id":id}))
+    })
+  },
+    _clear(){
+        return new Promise((res)=>{
+      res(Orders.remove({},{ multi: true }))
     })
   }
 }

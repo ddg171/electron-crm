@@ -9,6 +9,7 @@ export interface ItemController {
   insert:(t:InsertPayload) => Promise<any>,
   update:(id:string,t:UpdatePayload) => Promise<any>,
   delete:(id:string)=>Promise<any>
+  _clear:()=>Promise<any>
 }
 
 export const itemController = {
@@ -62,5 +63,10 @@ export const itemController = {
     return new Promise((res)=>{
       res(Items.remove({"_id":id}))
     })
+  },
+  _clear(){
+        return new Promise((res)=>{
+      res(Items.remove({},{ multi: true }))
+    })
   }
-}
+} 

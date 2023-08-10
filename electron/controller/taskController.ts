@@ -10,6 +10,7 @@ export interface TaskController {
   finish:(id:string)=>Promise<any>,
   itemTask:(id:string,itemId:string,isFinished:boolean)=>Promise<any>,
   delete:(id:string)=>Promise<any>
+  _clear:()=>Promise<any>
 }
 
 const _update = (id:string,payload:Partial<UpdatePayload>)=>{
@@ -86,6 +87,11 @@ export const taskController = {
   delete(id:string){
     return new Promise((res)=>{
       res(Tasks.remove({"_id":id}))
+    })
+  },
+  _clear(){
+        return new Promise((res)=>{
+      res(Tasks.remove({},{ multi: true }))
     })
   }
 }

@@ -8,18 +8,23 @@
       </el-row>
     </template>
     <el-row>
-      <el-col :span="6">
+      <el-col :span="5">
         完了予定日:{{format(props.task.estinatedDeliveryDate,"yyyy/MM/dd")}}
+      </el-col>
+      <el-col :span="5">
+        外注:{{props.task.isOutSource?"外注":"自社"}}
       </el-col>
 
     </el-row>
     <el-row gutter="16">
       <el-col :span="4">
-        <el-button @click="finish" size="large">全て完了にする</el-button>
+        <el-button @click="finish" size="large" :type="props.task.isFinished?'success':'danger'">全て完了にする</el-button>
       </el-col>
       <el-col span="6">
         <el-button v-for="i in itemList" :key="i" @click="finishItemTask(props.task._id,i,!props.task.itemTasks[i])"
-          size="large">{{
+          size="large"
+          :type="props.task.itemTasks[i]? 'success':'danger'"
+          >{{
           itemsObj[i] }}/{{ !!props.task.itemTasks[i]?"済":"未" }}</el-button>
       </el-col>
     </el-row>

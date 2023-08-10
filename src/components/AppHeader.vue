@@ -23,6 +23,9 @@
           <el-menu-item>
             <RouterLink to="/supplier">取引先</RouterLink>
           </el-menu-item>
+          <el-menu-item>
+            <RouterLink to="/admin">設定</RouterLink>
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>

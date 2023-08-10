@@ -8,6 +8,7 @@ export interface UserController {
   insert:(t:InsertPayload) => Promise<any>,
   update:(id:string,t:UpdatePayload) => Promise<any>,
   delete:(id:string)=>Promise<any>
+  _clear:()=>Promise<any>
 }
 
 export const userController = {
@@ -60,6 +61,11 @@ export const userController = {
   delete(id:string){
     return new Promise((res)=>{
       res(Users.remove({"_id":id}))
+    })
+  },
+_clear(){
+        return new Promise((res)=>{
+      res(Users.remove({},{ multi: true }))
     })
   }
 }
