@@ -29,7 +29,7 @@
           <el-col :span="12">
             <el-form-item :label="`関わる品物`">
               <el-checkbox-group v-model="taskValue.items">
-                <el-tooltip v-for="i in props.items" :key="i._id" class="box-item" :content="`分類:${i.category}`"
+                <el-tooltip v-for="i in shownItems" :key="i._id" class="box-item" :content="`分類:${i.category}`"
                   placement="top-start">
                   <el-checkbox-button :label="i._id" :name="i.name">
                     {{ i.name }}</el-checkbox-button>
@@ -103,6 +103,10 @@ const taskValue = reactive<TaskValue>(
     userId:""
   }
 )
+
+const shownItems =computed<Item[]>(()=>{
+  return props.items.filter(i=>taskValue.items.includes(i._id))
+})
 
 const submit =async ()=>{
   const id = props.task._id
