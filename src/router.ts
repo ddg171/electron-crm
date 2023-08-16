@@ -1,8 +1,8 @@
 
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Index from "./view/Index.vue"
-import User from './view/User/Index.vue';
-import UserDetail from './view/User/_id.vue';
+import User from './view/user/Index.vue';
+import UserDetail from './view/user/_id.vue';
 import Order from "./view/order/Index.vue";
 import Admin from "./view/Admin.vue";
 import OrderCreate from "./view/order/Create.vue";

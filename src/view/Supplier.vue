@@ -56,7 +56,7 @@ interface Emits {
   (event: 'update'): void
 }
 
-const emits =defineEmits<Emits>()
+defineEmits<Emits>()
 const showDetail = (id:string)=>{
   selectedId.value = id
 }

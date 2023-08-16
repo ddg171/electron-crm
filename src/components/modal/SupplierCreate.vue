@@ -12,7 +12,7 @@
 <script setup lang="ts">
 
 import AppModal from './AppModal.vue';
-import SupplierCreateForm from "../form/Supplier/Create.vue"
+import SupplierCreateForm from "../form/supplier/Create.vue"
 
 const emits=defineEmits<{(e:"click-outside"):void,(e:"create",v?:string):void}>()
 
