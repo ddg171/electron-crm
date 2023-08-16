@@ -10,15 +10,24 @@
         {{ userObj[scope.row.userId] ||"不明"}}
       </template>
     </el-table-column>
-    <el-table-column prop="taskTotalCount" label="工程数" />
-    <el-table-column label="お預かり品数">
+    <el-table-column prop="createdDate" label="作成日">
       <template #default="scope">
-        {{ scope.row.items.length||0}}
+        {{ formatDate(scope.row.createdAt) }}
+      </template>
+    </el-table-column>
+    <el-table-column prop="updatedAt" label="最終更新日">
+      <template #default="scope">
+        {{ formatDate(scope.row.updatedAt) }}
       </template>
     </el-table-column>
     <el-table-column prop="estinatedDeliveryDate" label="お渡し予定日">
       <template #default="scope">
         {{ formatDate(scope.row.estinatedDeliveryDate) }}
+      </template>
+    </el-table-column>
+    <el-table-column label="お預かり品数">
+      <template #default="scope">
+        {{ scope.row.items.length||0}}
       </template>
     </el-table-column>
     <el-table-column fixed="right" label="Operations" width="120">
@@ -36,7 +45,7 @@ import {computed} from "vue"
 import {Order} from "../../../electron/model/orders";
 import {User} from "../../../electron/model/users";
 import { format } from "date-fns";
-import {formatOrderStatus} from "../../utils/status"
+import {formatOrderStatus} from "../../utils/formatter"
 interface Props{
   orders:Order[]
   users:User[]
@@ -61,8 +70,7 @@ const userObj =computed<{[T:string]:string}>(()=>{
 })
 
 const deleteOrder =async (id:string)=>{
-  await window.orderAPI.delete(id)
-  emits("delete")
+  emits("delete",id)
 
 }
   const props = withDefaults(defineProps<Props>(),{orders:()=>[],users:()=>[]})

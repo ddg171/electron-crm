@@ -1,8 +1,12 @@
 <template>
   <el-table :data="props.user" style="width: 100%">
     <el-table-column prop="name" label="名前" />
-    <el-table-column prop="sex" label="性別" />
-    <el-table-column label="性別">
+    <el-table-column prop="sex" label="性別">
+      <template #default="scope">
+        {{ formatGender(scope.row.gender) }}
+      </template>
+    </el-table-column>
+    <el-table-column label="誕生日">
       <template #default="scope">
         {{ formatDate(scope.row.birthDay) }}
       </template>
@@ -19,6 +23,7 @@
 <script setup lang="ts">
 import {format} from "date-fns";
 import {User} from "../../../electron/model/users";
+import { formatGender } from "../../utils/formatter";
 interface Props{
   user:User[]
 }

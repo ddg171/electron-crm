@@ -9,8 +9,10 @@ export interface Task {
   orderId:string
   userId:string
   isOutSource:boolean
-  suppierId:string|null
-  itemTasks:{[T:string]:boolean}
+  supplierId:string|null
+  items:string[]
+  consumedItems:string[]
+  producedItems:string[]
   estinatedDeliveryDate:Date
   createdAt:Date
   updatedAt:Date

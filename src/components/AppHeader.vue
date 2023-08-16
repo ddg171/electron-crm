@@ -15,7 +15,7 @@
             <RouterLink to="/">TOP</RouterLink>
           </el-menu-item>
           <el-menu-item>
-            <RouterLink to="/customer">顧客</RouterLink>
+            <RouterLink to="/user">顧客</RouterLink>
           </el-menu-item>
           <el-menu-item>
             <RouterLink to="/order">注文</RouterLink>

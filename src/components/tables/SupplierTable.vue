@@ -1,16 +1,14 @@
 <template>
-  <el-table :data="props.items" style="width: 100%">
+  <el-table :data="props.suppliers" style="width: 100%">
     <el-table-column prop="name" label="名前" />
-    <el-table-column prop="category" label="分類" />
-    <el-table-column label="注文">
+    <el-table-column label="電話番号">
       <template #default="scope">
-        <el-button v-if="scope.row.firstOrderId" link type="primary" size="small"
-          @click="$router.push(`/order/${scope.row.firstOrderId}`)">最初に預かった注文</el-button>
+        <el-link :href="'tel:'+scope.row.tel" target="_blank">{{scope.row.tel}}</el-link>
       </template>
     </el-table-column>
-    <el-table-column label="状況">
+    <el-table-column label="メールアドレス">
       <template #default="scope">
-        {{ scope.row.isExist? "店内/お客様":"店外/使用済み" }}
+        <el-link :href="'mailto:'+scope.row.email" target="_blank">{{scope.row.email}}</el-link>
       </template>
     </el-table-column>
     <el-table-column fixed="right" label="Operations" width="120">
@@ -23,18 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import {Item} from "../../../electron/model/items";
+import {Supplier} from "../../../electron/model/suppliers";
 interface Props{
-  items:Item[]
+  suppliers:Supplier[]
 }
 
 interface Emits{
   (e:"detail",id:string):void,
   (e:"delete",id:string):void
-
 }
 
-
-  const props = withDefaults(defineProps<Props>(),{items:()=>[]})
+  const props = withDefaults(defineProps<Props>(),{suppliers:()=>[]})
   const emits  = defineEmits<Emits>()
 </script>

@@ -1,97 +1,98 @@
 import { Task,Tasks} from '../model/tasks';
+import { find,findOne,insert,update,remove,_clear,Sort, updateMany } from "../helper/dbHelper"
+import {Items} from '../model/items';
 
 type InsertPayload =Omit<Task,"_id"|"createdAt"|"status"|"updatedAt">
 type UpdatePayload =Omit<Task,"_id"|"createdAt"|"updatedAt">
-export interface TaskController {
-  find: (option:{[T:string]:any}) =>Promise<Task[]>,
-  findOne:(id:string)=>Promise<Task>,
-  insert:(t:InsertPayload) => Promise<Task>,
-  update:(id:string,t:Partial<UpdatePayload>) => Promise<any>,
-  finish:(id:string)=>Promise<any>,
-  itemTask:(id:string,itemId:string,isFinished:boolean)=>Promise<any>,
-  delete:(id:string)=>Promise<any>
-  _clear:()=>Promise<any>
-}
 
-const _update = (id:string,payload:Partial<UpdatePayload>)=>{
-  if(!payload){
-      throw new Error()
-    }
-    const data ={
-      ...payload,
-      updatedAt: new Date()
-    }
-    return new Promise((res)=>{
-      res(Tasks.update({"_id":id},{$set:data}))
-    })
-  }
 
- const _findOne=(id:string):Promise<Task>=>{
-    return new Promise((res,rej)=>{
-      Tasks.findOne({"_id":id},(err,doc)=>{
-        if(err) return rej(err)
-        return res(doc)
-      })
-    })
-  }
 export const taskController = {
-  find(option:{[T:string]:any}){
-    return new Promise((res,rej)=>{
-      Tasks.find(option).sort({estinatedDeliveryDate:1}).exec(
-        (err,doc)=>{
-          if(err) return rej(err)
-          return res(doc)
-        })
-      })
+  // 全件取得
+  find(option:{[T:string]:any},sort:Sort={}):Promise<Task[]>{
+    return find(Tasks,option,sort)
   },
-  findOne(id:string){
-    return _findOne(id)
+  // 1件取得
+  findById(id:string):Promise<Task>{
+    return findOne(Tasks,{_id:id})
   },
-  insert(payload:InsertPayload){
+  // 1件追加
+  insert(payload:InsertPayload):Promise<Task>{
     if(!payload){
       throw new Error()
     }
     const data ={
       ...payload,
-      status:"waiting",
       createdAt:new Date(),
       updatedAt: new Date()
     }
-    return new Promise((resolve,reject)=>{
-      Tasks.insert(data,(err,doc)=>{
-        if(err) return reject(err)
-        resolve(doc)
-       })
-
-    })
+    return insert<Task>(Tasks,data)
   },
-  update(id:string,payload:UpdatePayload){
-    return _update(id,payload)
+  // 1件更新
+  update(id:string,payload:UpdatePayload):Promise<number>{
+    if(!payload){
+      throw new Error()
+    }
+    const data ={
+      ...payload,
+      updatedAt: new Date()
+    }
+    return update(Tasks,id,data)
   },
-  itemTask(id:string,itemId:string,isFinished:boolean){
-    return new Promise((res)=>{
-      res(Tasks.update({"_id":id},{$set:{[`itemTasks.${itemId}`]:isFinished,updatedAt:new Date()}}))
-    })
+  // 工程が完了した際の処理
+  // 関連する品物の状態も更新する
+  async finish(id:string):Promise<number>{
+    const doc = await findOne(Tasks,{_id:id})
+    const consumedItems = doc?.consumedItems || []
+    // 消費した品物の処理
+    if(consumedItems.length){
+      const d ={
+        isExist:false,
+        updatedAt: new Date()
+      }
+      updateMany(Items,{_id:{$in:consumedItems}},{$set:d})
+    }
+    // 取り寄せ、生産した商品の処理
+    const producedItems = doc?.producedItems || []
+    if(producedItems.length){
+      const d ={
+        isExist:true,
+        updatedAt: new Date()
+      }
+      updateMany(Items,{_id:{$in:producedItems}},{$set:d})
+    }
+    return await update(Tasks,id,{isFinished:true})
   },
-  async finish(id:string){
-    const t = await _findOne(id)
-    if(!t) throw new Error("Task not found")
-    const itemTasks = t.itemTasks
-  const keys = Object.keys(itemTasks)
-  const newItemTasks:{[T:string]:boolean} = {}
-  keys.forEach(async (key)=>{
-    newItemTasks[key] = true
-  })
-  return _update(id,{isFinished:true,itemTasks:newItemTasks})
+  // 工程が完了した際の処理
+  // 関連する品物の状態も更新する
+  async undo(id:string):Promise<number>{
+    const doc = await findOne(Tasks,{_id:id})
+    const consumedItems = doc?.consumedItems || []
+    // 消費した品物の処理
+    if(consumedItems.length){
+      const d ={
+        isExist:true,
+        updatedAt: new Date()
+      }
+      await updateMany(Items,{_id:{$in:consumedItems}},{$set:d})
+    }
+    // 取り寄せ、生産した商品の処理
+    const producedItems = doc?.producedItems || []
+    if(producedItems.length){
+      const d ={
+        isExist:false,
+        updatedAt: new Date()
+      }
+      await updateMany(Items,{_id:{$in:producedItems}},{$set:d})
+    }
+    return await update(Tasks,id,{isFinished:false})
   },
-  delete(id:string){
-    return new Promise((res)=>{
-      res(Tasks.remove({"_id":id}))
-    })
+  // 1件削除
+  delete(id:string):Promise<number>{
+    return remove(Tasks,id)
   },
-  _clear(){
-        return new Promise((res)=>{
-      res(Tasks.remove({},{ multi: true }))
-    })
+  // 全件削除
+  _clear():Promise<number>{
+        return _clear(Tasks)
   }
 }
+

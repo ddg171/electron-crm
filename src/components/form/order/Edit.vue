@@ -11,15 +11,18 @@
     </el-form-item>
     <el-form-item :label="`お預かり品/現在${props.initialValue?.items.length||0}個`">
       <el-checkbox-group v-model="form.items">
-        <el-tooltip v-for="i in props.items" :key="i._id" class="box-item" :content="`分類:${i.category}`"
+        <el-tooltip v-for="i in shownItems" :key="i._id" class="box-item" :content="`分類:${i.category}`"
           placement="top-start">
           <el-checkbox-button :label="i._id" :name="i.name">
             {{ i.name }}</el-checkbox-button>
         </el-tooltip>
       </el-checkbox-group>
-      <div>
-        <el-button size="large">品物管理</el-button> <el-button @click="emits(`show-item-create-modal`)">品物追加</el-button>
-      </div>
+    </el-form-item>
+    <el-form-item label="">
+      <el-row>
+        <el-switch v-model="isShowAllItems" inactive-text="全ての品物を表示" />
+        <el-button @click="emits('show-item-create-modal' ) ">品物追加</el-button>
+      </el-row>
     </el-form-item>
     <el-form-item label="摘要欄">
       <el-input type="textarea" v-model="form.memo" />
@@ -31,12 +34,12 @@
 </template>
 
 <script lang="ts" setup>
-import{reactive,watch} from "vue"
+import{computed, reactive,ref,watch} from "vue"
 
 import {Order} from "../../../../electron/model/orders";
 import {User} from "../../../../electron/model/users";
 import {Item} from "../../../../electron/model/items";
-import {formatOrderStatus} from "../../../utils/status"
+import {formatOrderStatus} from "../../../utils/formatter"
 
 
 interface Props{
@@ -51,15 +54,21 @@ const props = withDefaults(
     user:null,
     items:()=>[]
   })
+  const isShowAllItems = ref<boolean>(true)
+  const shownItems =computed<Item[]>(()=>{
+    if(isShowAllItems.value) {
+      return props.items
+    }
+    return props.items.filter(i=>i.firstOrderId===props.initialValue?._id)
+  })
 
   interface Emits {
     (e: "update",id:string): void
-    (e:"show-item-table"):void
     (e:"show-item-create-modal"):void
   }
   const emits = defineEmits<Emits>()
 
-type OrderFormValues= Omit<Order,"_id"|"status"|"taskTotalCount"|"finishedTaskCount"|"userId"|"createdAt"|"updatedAt">
+type OrderFormValues= Omit<Order,"_id"|"status"|"userId"|"createdAt"|"updatedAt">
 const form =reactive<OrderFormValues>({
   memo: "",
   estinatedDeliveryDate: new Date(),
@@ -77,10 +86,11 @@ const sync =()=>{
 const submit= async()=>{
   const id= props.initialValue?._id
   if(!id) return
-  const items =JSON.parse(JSON.stringify(form.items));
-  const payload={
+  const items:string[] =JSON.parse(JSON.stringify(form.items));
+  const exsitedItems = items.filter((i:string)=>props.items.find((item:Item)=>item._id===i))
+  const payload= {
     memo:form.memo,
-    items,
+    items:exsitedItems,
     estinatedDeliveryDate:form.estinatedDeliveryDate
   }
   await window.orderAPI.update(id,payload)
@@ -106,3 +116,4 @@ sync()
   min-height: calc(25vh - 36px);
 }
 </style>
+../../../utils/formatter

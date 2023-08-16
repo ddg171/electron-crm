@@ -1,59 +1,145 @@
 <template>
   <el-card>
-    <template #header>
-      <el-row>
-        <el-col span="6">
-          <h3>{{ props.task.name }}/{{ props.task.isFinished?"済":"未" }}</h3>
-        </el-col>
-      </el-row>
-    </template>
     <el-row>
-      <el-col :span="5">
-        完了予定日:{{format(props.task.estinatedDeliveryDate,"yyyy/MM/dd")}}
-      </el-col>
-      <el-col :span="5">
-        外注:{{props.task.isOutSource?"外注":"自社"}}
-      </el-col>
+      <el-form label-width="120px" class="task-form">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="工程名">
+              <el-input v-model="taskValue.name">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="完了予定日">
+              <el-date-picker v-model="taskValue.estinatedDeliveryDate">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="外注">
+              <el-switch v-model="taskValue.isOutSource">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="外注先">
+              <el-select v-model="taskValue.supplierId">
+                <el-option label="選択" value=""></el-option>
+                <el-option v-for="supplier in props.suppliers" :key="supplier._id" :label="supplier.name"
+                  :value="supplier._id">
+                </el-option>
+              </el-select>
+            </el-form-item>
 
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="`関わる品物`">
+              <el-checkbox-group v-model="taskValue.items">
+                <el-tooltip v-for="i in props.items" :key="i._id" class="box-item" :content="`分類:${i.category}`"
+                  placement="top-start">
+                  <el-checkbox-button :label="i._id" :name="i.name">
+                    {{ i.name }}</el-checkbox-button>
+                </el-tooltip>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item :label="`消費する品物`" v-if="taskValue.items.length>0">
+              <el-checkbox-group v-model="taskValue.consumedItems">
+                <el-tooltip v-for="i in selectedItems" :key="i._id" class="box-item" :content="`分類:${i.category}`"
+                  placement="top-start">
+                  <el-checkbox-button :label="i._id" :name="i.name" :disabled="taskValue.producedItems.includes(i._id)">
+                    {{ i.name }}</el-checkbox-button>
+                </el-tooltip>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item :label="`取寄する品物`" v-if="taskValue.items.length>0">
+              <el-checkbox-group v-model="taskValue.producedItems">
+                <el-tooltip v-for="i in selectedItems" :key="i._id" class="box-item" :content="`分類:${i.category}`"
+                  placement="top-start">
+                  <el-checkbox-button :label="i._id" :name="i.name" :disabled="taskValue.consumedItems.includes(i._id)">
+                    {{ i.name }}</el-checkbox-button>
+                </el-tooltip>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-row>
-    <el-row gutter="16">
-      <el-col :span="4">
-        <el-button @click="finish" size="large" :type="props.task.isFinished?'success':'danger'">全て完了にする</el-button>
+    <el-row :gutter="16" justify="space-between">
+      <el-col :span="8">
+        <el-button @click="toggleTask" size="large"
+          :type="props.task.isFinished?'success':'danger'">{{!props.task.isFinished?"完了にする":"元に戻す"}}</el-button>
+        <el-button type="primary" @click="submit" size="large">更新</el-button>
       </el-col>
-      <el-col span="6">
-        <el-button v-for="i in itemList" :key="i" @click="finishItemTask(props.task._id,i,!props.task.itemTasks[i])"
-          size="large"
-          :type="props.task.itemTasks[i]? 'success':'danger'"
-          >{{
-          itemsObj[i] }}/{{ !!props.task.itemTasks[i]?"済":"未" }}</el-button>
+      <el-col :span="4">
+        <el-button type="danger" size="small" @click="deleteTask(props.task._id)">削除する</el-button>
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
+
 import {Task} from "../../../electron/model/tasks";
 import {Item} from "../../../electron/model/items";
-import {format} from "date-fns";
+import {Supplier} from "../../../electron/model/suppliers";
+import {computed, reactive} from "vue";
 
-const itemList = computed<string[]>(() => {
-  return Object.keys(props.task.itemTasks);
-});
+const selectedItems =computed(()=>props.items.filter(i=>taskValue.items.includes(i._id)))
 
 interface Props{
   task:Task
   items:Item[]
+  suppliers:Supplier[]
+}
+type TaskValue =Omit<Task,"updatedAt"|"createdAt">
+
+const taskValue = reactive<TaskValue>(
+  {
+    _id:"",
+    name:"",
+    isFinished:false,
+    isOutSource:false,
+    supplierId:"",
+    items:[],
+    consumedItems:[],
+    producedItems:[],
+    estinatedDeliveryDate:new Date(),
+    memo:"",
+    orderId:"",
+    userId:""
+  }
+)
+
+const submit =async ()=>{
+  const id = props.task._id
+  const payload ={
+    name:taskValue.name,
+    isFinished:taskValue.isFinished,
+    isOutSource:taskValue.isOutSource,
+    supplierId:taskValue.supplierId,
+    items:JSON.parse(JSON.stringify(taskValue.items)),
+    consumedItems:JSON.parse(JSON.stringify(taskValue.consumedItems)),
+    producedItems:JSON.parse(JSON.stringify(taskValue.producedItems)),
+    estinatedDeliveryDate:taskValue.estinatedDeliveryDate,
+    memo:taskValue.memo,
+    orderId:taskValue.orderId,
+    userId:taskValue.userId
+  }
+  await window.taskAPI.update(id,payload)
+  sync()
+  emits("update")
 }
 
-const itemsObj =computed<{[T:string]:string}>(()=>{
-  const obj ={} as {[T:string]:string}
-  props.items.forEach((i:Item)=>{
-    obj[i._id]=i.name
-  })
-  return obj
-})
-const props = defineProps<Props>()
+const sync =()=>{
+  taskValue._id = props.task._id
+  taskValue.name = props.task.name
+  taskValue.isFinished = props.task.isFinished
+  taskValue.isOutSource = props.task.isOutSource
+  taskValue.supplierId = props.task.supplierId
+  taskValue.items = props.task.items
+  taskValue.consumedItems = props.task.consumedItems
+  taskValue.producedItems = props.task.producedItems
+  taskValue.estinatedDeliveryDate = props.task.estinatedDeliveryDate
+  taskValue.memo = props.task.memo
+  taskValue.orderId = props.task.orderId
+  taskValue.userId = props.task.userId
+}
+
+const props = withDefaults(defineProps<Props>(),{suppliers:()=>[],})
 interface Emits {
   (e: "update"): void
   (e:"finish"):void
@@ -61,13 +147,26 @@ interface Emits {
 }
 const emits = defineEmits<Emits>()
 
-const finishItemTask =async (taskId:string,itemId:string,isFinished:boolean)=>{
-  await window.taskAPI.itemTask(taskId,itemId,isFinished)
+const deleteTask = async (id:string)=>{
+  await window.taskAPI.delete(id)
   emits("update")
 }
 
-const finish =async ()=>{
-  await window.taskAPI.finish(props.task._id)
+const toggleTask =async ()=>{
+  const id = props.task._id
+  const isFinished = props.task.isFinished
+  if(isFinished){
+    await window.taskAPI.undo(id)
+  }else{
+    await window.taskAPI.finish(id)
+  }
   emits("update")
 }
+sync()
 </script>
+
+<style scoped>
+.task-form {
+  width: 100%;
+}
+</style>

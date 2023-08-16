@@ -3,8 +3,19 @@
     <el-col>
       <!-- ここに中身 -->
       <el-card>
-      <el-input v-model="check" />
-      <el-button @click="clear" size="large" type="danger" :disabled="check!=='clear'">データ全削除</el-button>
+        <template #header>
+          <el-row>
+            <h2>データ全削除</h2>
+          </el-row>
+        </template>
+        <el-form @submit.prevent="()=>{}">
+          <el-form-item label="最終確認">
+            <el-input v-model="check" placeholder="clearと入力してください" />
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="clear" size="large" type="danger" :disabled="check!=='clear'">データ全削除</el-button>
+          </el-form-item>
+        </el-form>
       </el-card>
     </el-col>
   </el-row>

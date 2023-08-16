@@ -6,8 +6,9 @@ export interface Item {
   name:string
   category:string
   userId:string|null
-  isConsumable:boolean
+  firstOrderId:string|null
   description:string
+  isExist:boolean
   createdAt:Date
   updatedAt:Date
 }

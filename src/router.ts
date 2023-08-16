@@ -1,7 +1,8 @@
 
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Index from "./view/Index.vue"
-import Customer from './view/Customer.vue';
+import User from './view/User/Index.vue';
+import UserDetail from './view/User/_id.vue';
 import Order from "./view/order/Index.vue";
 import Admin from "./view/Admin.vue";
 import OrderCreate from "./view/order/Create.vue";
@@ -11,7 +12,8 @@ import Supplier from "./view/Supplier.vue"
 
 const routes: RouteRecordRaw[] = [
   { path: "/", component: Index },
-  { path: "/customer", component: Customer },
+  { path: "/user", component: User },
+  { path: "/user/:id", component: UserDetail },
   { path: "/supplier", component: Supplier },
   { path: "/order", component: Order },
   { path: "/order/create", component: OrderCreate },
@@ -24,7 +26,7 @@ const basePath = "/";
 
 const router = createRouter({
   history: createWebHistory(basePath),
-  routes, // `routes: routes` の短縮表記
+  routes,
 });
 
 export default router;

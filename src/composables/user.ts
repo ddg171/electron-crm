@@ -16,3 +16,19 @@ export const useUsersState =()=>{
     get,
   }
 }
+
+export const useUserState =()=>{
+  const user = ref<User|null>()
+  const get = async(id:string)=>{
+    const result= await window.userAPI.findById(id)
+    user.value = result
+  }
+  const reset =()=>{
+    user.value=null
+  }
+  return {
+    user,
+    reset,
+    get,
+  }
+}

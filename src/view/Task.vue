@@ -8,16 +8,19 @@
             <h2>絞り込み</h2>
           </el-row>
         </template>
-        <el-row gutter="4">
-          <el-col span="12">
+        <el-row :gutter="4">
+          <el-col span="10">
             <el-switch v-model="isOutSource" class="mb-2" active-text="外注のみ" inactive-text="全て" />
           </el-col>
-          <el-col span="12">
+          <el-col :span="10">
             <el-form-item label="取引先">
-              <el-select></el-select>
+              <el-select v-model="supplierId">
+                <el-option label="選択" value="" />
+                <el-option v-for="s in suppliers" :key="s._id" :label="s.name" :value="s._id" />
+              </el-select>
             </el-form-item>
           </el-col>
-          <el-col span="12">
+          <el-col :span="10">
             <el-form-item label="顧客">
               <el-select v-model="userId">
                 <el-option label="選択" value="" />
@@ -33,9 +36,9 @@
             <h2>未完了の工程</h2>
           </el-row>
         </template>
-        <el-row gutter="6">
+        <el-row :gutter="6">
           <el-col class="task-list" v-for="t in unFinishedTasks" :key="t._id">
-            <TaskCard :task="t" :items="items" />
+            <TaskCard :suppliers="suppliers" :task="t" :items="items" />
           </el-col>
         </el-row>
       </el-card>
@@ -45,9 +48,9 @@
             <h2>完了した工程</h2>
           </el-row>
         </template>
-        <el-row gutter="6">
-          <el-col class="task-list" v-for="t in finishedTasks" :key="t._id">
-            <TaskCard :task="t" :items="items" />
+        <el-row :gutter="6">
+          <el-col class="task-list" v-for="t in finishedTasks" :key="t._id" @update="init">
+            <TaskCard :suppliers="suppliers" :task="t" :items="items" @update="init" />
           </el-col>
         </el-row>
       </el-card>
@@ -61,21 +64,25 @@ import { useItemsState } from '../composables/item';
 import { useTasksState } from '../composables/tasks';
 import TaskCard from '../components/card/Task.vue';
 import {useUsersState} from '../composables/user';
+import {useSuppliersState} from '../composables/suppliers';
 
 const {tasks,get:getTasks,reset:resetTasks} = useTasksState()
 const {users,get:getUsers,reset:resetUsers} = useUsersState()
 const {items,get:getItems,reset:reetItems} = useItemsState()
+const {suppliers,get:getSuppliers,reset:resetSuppliers} = useSuppliersState()
 
 const isOutSource = ref<boolean>(false)
 const userId = ref<string>("")
+const supplierId = ref<string>("")
 const init = async()=>{
   resetTasks()
   reetItems()
   resetUsers()
-  await getTasks()
+  resetSuppliers()
+  await getTasks({},{estinatedDeliveryDate:1})
   await getItems()
   await getUsers()
-  console.log(tasks)
+  await getSuppliers()
 }
 
 const filtered = computed(()=>{
@@ -85,6 +92,9 @@ const filtered = computed(()=>{
   }
   if(userId.value){
     filteredTasks = filteredTasks.filter(t=> t.userId === userId.value)
+  }
+  if(supplierId.value){
+    filteredTasks = filteredTasks.filter(t=> t.supplierId === supplierId.value)
   }
   return filteredTasks
 })
@@ -110,3 +120,4 @@ init()
   min-height: calc(25vh - 36px);
 }
 </style>
+../composables/item

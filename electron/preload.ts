@@ -1,42 +1,25 @@
 
 import {contextBridge } from "electron"
-import {userController,UserController} from "./controller/userController"
-import {itemController,ItemController } from "./controller/itemController"
-import {orderController,OrderController } from "./controller/orderController"
-import { taskController, TaskController } from "./controller/taskController"
-import {myAPIController} from "./controller/myAPIController"
-
-export interface myAPI {
-  find: () => Promise<Task[]>,
-  insert:(t:Task) => Promise<any>,
-  delete:(id:string)=>Promise<any>
-}
-
+import {userController} from "./controller/userController"
+import {itemController } from "./controller/itemController"
+import {orderController } from "./controller/orderController"
+import {taskController } from "./controller/taskController"
+import { supplierController } from "./controller/supplierController"
 
 declare global {
   interface Window {
-    myAPI: myAPI
-    userAPI:UserController
-    itemAPI:ItemController
-    orderAPI:OrderController
-    taskAPI:TaskController
+    userAPI:typeof userController
+    itemAPI:typeof itemController
+    orderAPI:typeof orderController
+    taskAPI:typeof taskController
+    supplierAPI:typeof supplierController
   }
 }
 contextBridge.exposeInMainWorld("userAPI",userController)
 contextBridge.exposeInMainWorld("orderAPI",orderController)
 contextBridge.exposeInMainWorld("itemAPI",itemController)
 contextBridge.exposeInMainWorld("taskAPI",taskController)
-
-contextBridge.exposeInMainWorld('myAPI',myAPIController)
-
-interface Task {
-  _id?:string
-  text:string
-  isFinished:boolean
-  deadline:Date|string
-  createdAt?:Date|string
-  updatedAt?:Date|string
-}
+contextBridge.exposeInMainWorld("supplierAPI",supplierController)
 
 
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {

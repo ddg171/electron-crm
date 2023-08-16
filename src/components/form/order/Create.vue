@@ -25,9 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import{reactive,computed,watch}from "vue"
+import{reactive,computed,watch, onMounted}from "vue"
 import {Order} from "../../../../electron/model/orders"
-import {Item} from "../../../../electron/model/items";
+
 import {User} from "../../../../electron/model/users";
 import { addDays,subDays} from "date-fns"
 
@@ -56,11 +56,11 @@ const sub =(d:number)=>{
 
 interface Props{
   users:User[]
-  items:Item[]
+  userId:string|null
   submitButtonShown:boolean
 }
 
-const props =withDefaults(defineProps<Props>(),{users:()=>[],items:()=>[],submitButtonShown:false})
+const props =withDefaults(defineProps<Props>(),{users:()=>[],userId:null,submitButtonShown:false})
 const userId = computed(()=>form.userId)
 watch(userId,(val:string)=>{
   emits("user-select",val)
@@ -74,14 +74,11 @@ const userIdList =computed<{id:string,name:string}[]>(()=>{
 
 const submit =async ()=>{
   const {memo,estinatedDeliveryDate,userId} =form
-  // 謎
-  const items = props.items.map((i:Item)=>i._id)
-  console.log(items)
   if(!userId) return
 
   const payload ={
     memo,
-    items,
+    items:[],
     estinatedDeliveryDate,
     userId,
     taskTotalCount:0,
@@ -89,11 +86,14 @@ const submit =async ()=>{
   }
   const r= await window.orderAPI.insert(payload)
   const id =r._id
-  console.log("submit:order",id)
 
   emits("submit",id)
 }
 
+onMounted(()=>{
+  if(!props.userId) return
+  form.userId = props.userId
+})
 
 defineExpose({
   submit

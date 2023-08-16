@@ -5,8 +5,6 @@ export interface Order {
   _id:string
   status:	"waiting"|"inProgress"|"complete"|"aborted"
   memo: string
-  taskTotalCount:	number
-  finishedTaskCount: number
   estinatedDeliveryDate: Date
   userId:string
   items: string[]

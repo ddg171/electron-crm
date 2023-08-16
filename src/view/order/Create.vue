@@ -7,7 +7,7 @@
             <h2>新規受付</h2>
           </el-row>
         </template>
-        <OrderCreateForm :users="users" ref="form" :submitButtonShown="false" @user-select="userSelect"
+        <OrderCreateForm :users="users" :userId="userId" ref="form" :submitButtonShown="false" @user-select="userSelect"
           @click-add-customer="showCustomerModal" @submit="$router.push(`/order/${$event}`)" />
         <UserCreateModal :show-close="isCustomerModalShown" @create="initUsers" @click-outside="hideCustomerModal" />
 
@@ -22,10 +22,17 @@ import OrderCreateForm from "../../components/form/order/Create.vue"
 import UserCreateModal from "../../components/modal/UserCreate.vue"
 import {useModalState} from '../../composables/modal'
 import {useUsersState} from "../../composables/user";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
+const query = route.query
+const userId = ref<string|null>(query.userId as string)
 
 const {isShown:isCustomerModalShown,show:showCustomerModal,hide:hideCustomerModal} =useModalState()
 
 const {users,get:getUsers,reset:resetUsers}=useUsersState()
+
+
 
 const selectedUserId = ref<string>("")
 const initUsers = async ()=>{
