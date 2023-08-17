@@ -1,6 +1,7 @@
 import { Order,Orders} from '../model/orders';
 import { find,findOne,insert,update,remove,_clear,Sort,removeMany } from "../helper/dbHelper"
 import {Tasks} from '../model/tasks';
+import { Items } from '../model/items';
 
 type InsertPayload =Omit<Order,"_id"|"createdAt"|"status"|"updatedAt">
 type UpdatePayload =Partial<Omit<Order,"_id"|"createdAt"|"updatedAt">>
@@ -38,6 +39,12 @@ export const orderController = {
     const taskIds = tasks.map(task=>task._id)
     // タスクも全部消す。
     await removeMany(Tasks,{orderId:{$in:taskIds}})
+    // 品物も消す
+    const o = await findOne(Orders,{_id:id})
+    const items = o.items
+    if(items.length>0){
+      await removeMany(Items,{_id:{$in:items}})
+    }
     const r = remove(Orders,id)
     return r
   },

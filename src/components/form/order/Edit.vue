@@ -28,7 +28,8 @@
       <el-input type="textarea" v-model="form.memo" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit" size="large">更新</el-button>
+      <el-button type="primary" @click="submit" size="large"
+        :disabled="props.initialValue?.status === 'aborted'">更新</el-button>
     </el-form-item>
   </el-form>
 </template>

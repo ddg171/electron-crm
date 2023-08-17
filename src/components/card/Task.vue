@@ -90,8 +90,14 @@
     </div>
     <el-divider v-show="!isFolded" />
     <el-row>
-      <el-button @click="$router.push(`/user/${props.task.userId}`)">顧客ID:{{ props.task.userId }}</el-button>
+      <el-button @click="$router.push(`/user/${props.task.userId}`)">顧客:{{ props.user ? props.user.name :
+        props.task.userId
+      }}</el-button>
       <el-button @click="$router.push(`/order/${props.task.orderId}`)">注文ID:{{ props.task.orderId }}</el-button>
+      <div class="ml-2">
+        <el-tag v-for="i in shownItems" :key="i._id" size="large">{{ i.name }}</el-tag>
+      </div>
+
     </el-row>
   </el-card>
 </template>
@@ -103,6 +109,7 @@ import { Item } from "../../../electron/model/items";
 import { Supplier } from "../../../electron/model/suppliers";
 import { computed, reactive, ref } from "vue";
 import { format } from "date-fns";
+import { User } from "../../../electron/model/users";
 
 const selectedItems = computed(() => props.items.filter(i => taskValue.items.includes(i._id)))
 
@@ -110,6 +117,7 @@ interface Props {
   task: Task
   items: Item[]
   suppliers: Supplier[]
+  user?: User | null
 }
 type TaskValue = Omit<Task, "updatedAt" | "createdAt">
 const isFolded = ref<boolean>(true)
@@ -207,5 +215,9 @@ sync()
   text-align: left;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
 }
 </style>

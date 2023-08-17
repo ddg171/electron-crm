@@ -1,5 +1,6 @@
-import { ref } from "vue";
+import {  ref } from "vue";
 import {User} from "../../electron/model/users";
+import {convertNeDBResultToObj} from "../utils/util";
 
 export const useUsersState =()=>{
   const users = ref<User[]>([])
@@ -10,10 +11,15 @@ export const useUsersState =()=>{
   const reset =()=>{
     users.value=[]
   }
+  const find = (id:string):User|null=>{
+    const obj =convertNeDBResultToObj(users.value)
+    return obj[id]||null
+  }
   return {
     users,
     reset,
     get,
+    find
   }
 }
 

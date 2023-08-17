@@ -1,15 +1,18 @@
 <template>
   <el-table :data="props.orders" style="width: 100%">
+    <el-table-column label="状況">
+      <template #default="scope">
+        <el-tag size="large" :type="formatOrderColor(scope.row.status)">
+          {{ formatStatus(scope.row.status) }}
+        </el-tag>
+      </template>
+    </el-table-column>
     <el-table-column label="番号">
       <template #default="scope">
         {{ scope.row._id }}
       </template>
     </el-table-column>
-    <el-table-column label="状況">
-      <template #default="scope">
-        {{ formatStatus(scope.row.status) }}
-      </template>
-    </el-table-column>
+
     <el-table-column label="顧客名">
       <template #default="scope">
         {{ userObj[scope.row.userId] || "不明" }}
@@ -30,7 +33,7 @@
         {{ formatDate(scope.row.estinatedDeliveryDate) }}
       </template>
     </el-table-column>
-    <el-table-column label="お預かり品数">
+    <el-table-column label="品数">
       <template #default="scope">
         {{ scope.row.items.length || 0 }}
       </template>
@@ -50,7 +53,7 @@ import { computed } from "vue"
 import { Order } from "../../../electron/model/orders";
 import { User } from "../../../electron/model/users";
 import { format } from "date-fns";
-import { formatOrderStatus } from "../../utils/formatter"
+import { formatOrderStatus, formatOrderColor } from "../../utils/formatter"
 interface Props {
   orders: Order[]
   users: User[]

@@ -38,7 +38,7 @@
         </template>
         <el-row :gutter="6">
           <el-col class="task-list" v-for="t in unFinishedTasks" :key="t._id">
-            <TaskCard :suppliers="suppliers" :task="t" :items="items" />
+            <TaskCard :suppliers="suppliers" :task="t" :items="items" :user="findUser(t.userId)" @update="init" />
           </el-col>
         </el-row>
       </el-card>
@@ -49,8 +49,8 @@
           </el-row>
         </template>
         <el-row :gutter="6">
-          <el-col class="task-list" v-for="t in finishedTasks" :key="t._id" @update="init">
-            <TaskCard :suppliers="suppliers" :task="t" :items="items" @update="init" />
+          <el-col class="task-list" v-for="t in finishedTasks" :key="t._id">
+            <TaskCard :suppliers="suppliers" :task="t" :items="items" :user="findUser(t.userId)" @update="init" />
           </el-col>
         </el-row>
       </el-card>
@@ -68,7 +68,7 @@ import { useSuppliersState } from '../composables/suppliers';
 import { useRoute } from 'vue-router';
 
 const { tasks, get: getTasks, reset: resetTasks } = useTasksState()
-const { users, get: getUsers, reset: resetUsers } = useUsersState()
+const { users, get: getUsers, reset: resetUsers, find: findUser } = useUsersState()
 const { items, get: getItems, reset: reetItems } = useItemsState()
 const { suppliers, get: getSuppliers, reset: resetSuppliers } = useSuppliersState()
 

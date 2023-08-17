@@ -41,7 +41,7 @@
           <el-timeline-item v-for="t in tasks" :key="t._id" :icon="t.isOutSource ? Van : HomeFilled"
             :timestamp="t.isFinished ? format(t.updatedAt, 'yyyy/MM/dd') : format(t.estinatedDeliveryDate, 'yyyy/MMdd')"
             placement="top" size="large" :type="t.isFinished ? 'success' : 'warning'">
-            <TaskCard :task="t" :items="selectedItems" :suppliers="suppliers" @update="initTasks" />
+            <TaskCard :task="t" :items="selectedItems" :suppliers="suppliers" @update="initTasks" :user="user" />
           </el-timeline-item>
           <el-timeline-item
             :timestamp="order?.estinatedDeliveryDate ? format(order?.estinatedDeliveryDate, 'yyyy/MMdd') : 'n/a'"
@@ -165,8 +165,22 @@ const abort = async () => {
   if (!order.value) return
   const id = order.value._id
   await window.orderAPI.abort(id)
+  // タスクが残っている場合はすべて済にする+メモにキャンセルと入力。
+  const idList = tasks.value.map(t => t._id)
+  const query = {
+    _id: { $in: idList }
+  }
+  const payload = {
+    isFinished: true,
+    memo: "キャンセル"
+  }
+  await window.taskAPI.updateMany(query, payload)
+
+
   await init()
 }
+
+
 const complete = async () => {
   if (!order.value) return
   const id = order.value._id

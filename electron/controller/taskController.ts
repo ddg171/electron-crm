@@ -3,7 +3,7 @@ import { find,findOne,insert,update,remove,_clear,Sort, updateMany } from "../he
 import {Items} from '../model/items';
 
 type InsertPayload =Omit<Task,"_id"|"createdAt"|"status"|"updatedAt">
-type UpdatePayload =Omit<Task,"_id"|"createdAt"|"updatedAt">
+type UpdatePayload =Partial<Omit<Task,"_id"|"createdAt"|"updatedAt">>
 
 
 export const taskController = {
@@ -38,6 +38,17 @@ export const taskController = {
     }
     return update(Tasks,id,data)
   },
+  updateMany(option:{[T:string]:any},payload:UpdatePayload):Promise<number>{
+    if(!payload){
+      throw new Error()
+    }
+    const data ={
+      ...payload,
+      updatedAt: new Date()
+    }
+    return updateMany(Tasks,option,data)
+  },
+
   // 工程が完了した際の処理
   // 関連する品物の状態も更新する
   async finish(id:string):Promise<number>{

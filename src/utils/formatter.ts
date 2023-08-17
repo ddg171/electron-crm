@@ -8,6 +8,14 @@ const orderStatus:{[T:string]:string} ={
   aborted:"中断"
 }
 export const formatOrderStatus =formatter(orderStatus)
+const orderColor:{[T:string]:string} ={
+  waiting:"info",
+  inProgress:"primary",
+  complete:"success",
+  aborted:"error"
+}
+export const formatOrderColor =formatter(orderColor,"info")
+
 
 const genders:{[T:string]:string} ={
   male:"男",
