@@ -18,6 +18,9 @@
         </el-col>
       </el-row>
     </el-form-item>
+    <el-form-item>
+      <el-checkbox label="お渡し連絡が必要ならチェック" v-model="isNotifyRequired" />
+    </el-form-item>
     <el-form-item v-show="!props.submitButtonShown">
       <el-button type="primary" @click="submit" size="large">注文作成</el-button>
     </el-form-item>
@@ -25,73 +28,91 @@
 </template>
 
 <script setup lang="ts">
-import{reactive,computed,watch, onMounted}from "vue"
-import {Order} from "../../../../electron/model/orders"
+import { reactive, computed, watch, onMounted, ref } from "vue"
+import { Order } from "../../../../electron/model/orders"
 
-import {User} from "../../../../electron/model/users";
-import { addDays,subDays} from "date-fns"
+import { User } from "../../../../electron/model/users";
+import { addDays, subDays } from "date-fns"
 
-type NewItemFormValues= Omit<Order,"_id"|"createdAt"|"updatedAt"|"status"|"items"|"taskTotalCount"|"finishedTaskCount">
+type NewItemFormValues = Omit<Order, "_id" | "createdAt" | "updatedAt" | "status" | "items" | "taskTotalCount" | "finishedTaskCount">
 interface Emits {
-  (e:"submit",id:string):void
-  (e:"user-select",id:string):void
-  (e:"click-add-customer"):void
+  (e: "submit", id: string): void
+  (e: "user-select", id: string): void
+  (e: "click-add-customer"): void
 }
-const emits=defineEmits<Emits>()
-const form =reactive<NewItemFormValues>(
+const emits = defineEmits<Emits>()
+const form = reactive<NewItemFormValues>(
   {
-    memo:"",
-    estinatedDeliveryDate:new Date(),
-    userId:""
+    memo: "",
+    estinatedDeliveryDate: new Date(),
+    userId: "",
+
   }
 )
+const isNotifyRequired = ref<boolean>(false)
 
-const add =(d:number)=>{
-  form.estinatedDeliveryDate = addDays(form.estinatedDeliveryDate,d)
+const add = (d: number) => {
+  form.estinatedDeliveryDate = addDays(form.estinatedDeliveryDate, d)
 }
 
-const sub =(d:number)=>{
-  form.estinatedDeliveryDate = subDays(form.estinatedDeliveryDate,d)
+const sub = (d: number) => {
+  form.estinatedDeliveryDate = subDays(form.estinatedDeliveryDate, d)
 }
 
-interface Props{
-  users:User[]
-  userId:string|null
-  submitButtonShown:boolean
+interface Props {
+  users: User[]
+  userId: string | null
+  submitButtonShown: boolean
 }
 
-const props =withDefaults(defineProps<Props>(),{users:()=>[],userId:null,submitButtonShown:false})
-const userId = computed(()=>form.userId)
-watch(userId,(val:string)=>{
-  emits("user-select",val)
+const props = withDefaults(defineProps<Props>(), { users: () => [], userId: null, submitButtonShown: false })
+const userId = computed(() => form.userId)
+watch(userId, (val: string) => {
+  emits("user-select", val)
 })
 
-const userIdList =computed<{id:string,name:string}[]>(()=>{
-  return props.users.map((u)=>{
-    return{id:u._id,name:u.name}
+const userIdList = computed<{ id: string, name: string }[]>(() => {
+  return props.users.map((u) => {
+    return { id: u._id, name: u.name }
   })
 })
 
-const submit =async ()=>{
-  const {memo,estinatedDeliveryDate,userId} =form
-  if(!userId) return
+const submit = async () => {
+  const { memo, estinatedDeliveryDate, userId } = form
+  if (!userId) return
 
-  const payload ={
+  const payload = {
     memo,
-    items:[],
+    items: [],
     estinatedDeliveryDate,
     userId,
-    taskTotalCount:0,
-    finishedTaskCount:0
+    taskTotalCount: 0,
+    finishedTaskCount: 0
   }
-  const r= await window.orderAPI.insert(payload)
-  const id =r._id
+  const r = await window.orderAPI.insert(payload)
+  const id = r._id
+  if (isNotifyRequired.value) {
+    const t = {
+      name: "お渡し連絡",
+      isFinished: false,
+      isOutSource: false,
+      supplierId: "",
+      items: [],
+      consumedItems: [],
+      producedItems: [],
+      estinatedDeliveryDate: estinatedDeliveryDate,
+      memo: "",
+      orderId: id,
+      userId: userId
+    }
+    await window.taskAPI.insert(t)
+  }
 
-  emits("submit",id)
+  emits("submit", id)
 }
 
-onMounted(()=>{
-  if(!props.userId) return
+onMounted(() => {
+  if (!props.userId) return
   form.userId = props.userId
 })
 

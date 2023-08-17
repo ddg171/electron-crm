@@ -9,7 +9,7 @@
           </el-row>
         </template>
         <el-row :gutter="4">
-          <el-col span="10">
+          <el-col :span="10">
             <el-switch v-model="isOutSource" class="mb-2" active-text="外注のみ" inactive-text="全て" />
           </el-col>
           <el-col :span="10">
@@ -59,55 +59,68 @@
 </template>
 
 <script lang="ts" setup>
-import { ref,computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useItemsState } from '../composables/item';
 import { useTasksState } from '../composables/tasks';
 import TaskCard from '../components/card/Task.vue';
-import {useUsersState} from '../composables/user';
-import {useSuppliersState} from '../composables/suppliers';
+import { useUsersState } from '../composables/user';
+import { useSuppliersState } from '../composables/suppliers';
+import { useRoute } from 'vue-router';
 
-const {tasks,get:getTasks,reset:resetTasks} = useTasksState()
-const {users,get:getUsers,reset:resetUsers} = useUsersState()
-const {items,get:getItems,reset:reetItems} = useItemsState()
-const {suppliers,get:getSuppliers,reset:resetSuppliers} = useSuppliersState()
+const { tasks, get: getTasks, reset: resetTasks } = useTasksState()
+const { users, get: getUsers, reset: resetUsers } = useUsersState()
+const { items, get: getItems, reset: reetItems } = useItemsState()
+const { suppliers, get: getSuppliers, reset: resetSuppliers } = useSuppliersState()
 
 const isOutSource = ref<boolean>(false)
 const userId = ref<string>("")
 const supplierId = ref<string>("")
-const init = async()=>{
+const init = async () => {
   resetTasks()
   reetItems()
   resetUsers()
   resetSuppliers()
-  await getTasks({},{estinatedDeliveryDate:1})
+  await getTasks({}, { estinatedDeliveryDate: 1 })
   await getItems()
   await getUsers()
   await getSuppliers()
 }
 
-const filtered = computed(()=>{
+const filtered = computed(() => {
   let filteredTasks = tasks.value
-  if(isOutSource.value){
-    filteredTasks = filteredTasks.filter(t=> t.isOutSource)
+  if (isOutSource.value) {
+    filteredTasks = filteredTasks.filter(t => t.isOutSource)
   }
-  if(userId.value){
-    filteredTasks = filteredTasks.filter(t=> t.userId === userId.value)
+  if (userId.value) {
+    filteredTasks = filteredTasks.filter(t => t.userId === userId.value)
   }
-  if(supplierId.value){
-    filteredTasks = filteredTasks.filter(t=> t.supplierId === supplierId.value)
+  if (supplierId.value) {
+    filteredTasks = filteredTasks.filter(t => t.supplierId === supplierId.value)
   }
   return filteredTasks
 })
 
-const finishedTasks = computed(()=>{
-  return filtered.value.filter(t=>t.isFinished)
+const finishedTasks = computed(() => {
+  return filtered.value.filter(t => t.isFinished)
 })
 
-const unFinishedTasks = computed(()=>{
-  return filtered.value.filter(t=>!t.isFinished)
+const unFinishedTasks = computed(() => {
+  return filtered.value.filter(t => !t.isFinished)
 })
 
 init()
+
+onMounted(() => {
+  const route = useRoute()
+  const s = route.query.supplierId
+  const u = route.query.userId
+  if (s) {
+    supplierId.value = s as string
+  }
+  if (u) {
+    userId.value = u as string
+  }
+})
 </script>
 
 <style scoped>
