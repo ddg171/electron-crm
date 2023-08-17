@@ -15,6 +15,14 @@
       <el-card>
         <template #header>
           <el-row>
+            <h2>商品一覧</h2>
+          </el-row>
+        </template>
+        <ItemTable :items="selectedItems" :user="user" />
+      </el-card>
+      <el-card>
+        <template #header>
+          <el-row>
             <h2>作業一覧</h2>
             <el-button @click="showTask">作業追加</el-button>
           </el-row>
@@ -104,6 +112,7 @@ import TaskCreateModal from "../../components/modal/TaskCreate.vue";
 import { useModalState } from "../../composables/modal";
 import ItemCreateModal from "../../components/modal/ItemCreate.vue";
 import TaskCard from "../../components/card/Task.vue";
+import ItemTable from "../../components/tables/ItemTable.vue";
 import { Item } from "../../../electron/model/items";
 const route = useRoute()
 const { isShown: isShownItem, show: showItem, hide: hideItem } = useModalState()
