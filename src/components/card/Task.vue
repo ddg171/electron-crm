@@ -7,9 +7,13 @@
             {{ props.task.name }}/完了予定日:{{ format(props.task.estinatedDeliveryDate, "yyyy/MM/dd") }}
           </h3>
         </el-col>
-        <el-col :span="4">
-          <el-button @click="toggleTask" :type="props.task.isFinished ? 'success' : 'danger'">{{ !props.task.isFinished ?
-            "完了にする" : "元に戻す" }}</el-button>
+        <el-col :span="12">
+          <el-row justify="end">
+            <el-button @click="toggleTask" :type="props.task.isFinished ? 'success' : 'danger'" size="large">{{
+              !props.task.isFinished
+              ?
+              "完了する" : "元に戻す" }}</el-button>
+          </el-row>
         </el-col>
       </el-row>
     </template>
@@ -92,7 +96,7 @@
     <el-row>
       <el-button @click="$router.push(`/user/${props.task.userId}`)">顧客:{{ props.user ? props.user.name :
         props.task.userId
-      }}</el-button>
+        }}</el-button>
       <el-button @click="$router.push(`/order/${props.task.orderId}`)">注文ID:{{ props.task.orderId }}</el-button>
       <div class="ml-2">
         <el-tag v-for="i in shownItems" :key="i._id" size="large">{{ i.name }}</el-tag>

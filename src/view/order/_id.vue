@@ -38,9 +38,12 @@
                       注文作成/{{ order?.createdAt ? format(order?.createdAt, 'yyyy/MM/dd') : 'n/a' }}
                     </h3>
                   </el-col>
-                  <el-col :span="4">
-                    <el-button @click="accept" size="large" type="primary"
-                      :disabled="order?.status !== 'waiting'">受付する</el-button>
+                  <el-col :span="10">
+                    <el-row justify="end">
+                      <el-button type="info" size="large">お預かり票発行</el-button>
+                      <el-button @click="accept" size="large" type="primary"
+                        :disabled="order?.status !== 'waiting'">{{order?.status !== 'waiting'?"受付する":"受付済み"}}</el-button>
+                    </el-row>
                   </el-col>
                 </el-row>
               </template>
@@ -63,9 +66,11 @@
                       }}
                     </h3>
                   </el-col>
-                  <el-col :span="4">
-                    <el-button @click="complete" size="large" type="success"
-                      :disabled="finishBtnDisabled">作業完了</el-button>
+                  <el-col :span="12">
+                    <el-row justify="end">
+                      <el-button @click="complete" size="large" type="success"
+                        :disabled="finishBtnDisabled">作業完了</el-button>
+                    </el-row>
                   </el-col>
                 </el-row>
               </template>

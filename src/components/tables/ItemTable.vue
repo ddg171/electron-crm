@@ -1,11 +1,12 @@
 <template>
   <el-table :data="props.items" style="width: 100%">
+    <el-table-column prop="_id" label="番号" />
     <el-table-column prop="name" label="名前" />
     <el-table-column prop="category" label="分類" />
-    <el-table-column label="注文">
+    <el-table-column label="注文番号">
       <template #default="scope">
         <el-button v-if="scope.row.firstOrderId" link type="primary" size="small"
-          @click="$router.push(`/order/${scope.row.firstOrderId}`)">最初に預かった注文</el-button>
+          @click="$router.push(`/order/${scope.row.firstOrderId}`)">{{ scope.row.firstOrderId }}</el-button>
       </template>
     </el-table-column>
     <el-table-column label="状況">
